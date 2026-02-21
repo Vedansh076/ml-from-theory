@@ -11,7 +11,10 @@ from linear_regression.theory.geometry_checks import (
 from linear_regression.theory.projection import project_y
 from linear_regression.solvers.normal_equation import solve_normal_equation
 from linear_regression.solvers.sklearn_solver import solve_sklearn
+from linear_regression.solvers.ridge_regression import solve_ridge_regression
 
+
+from linear_regression.experiments.double_descent import run_double_descent
 
 def main():
     # --- Choose Dataset ---
@@ -30,6 +33,12 @@ def main():
     # --- Library: Sklearn ---
     w_sk, y_hat_sk = solve_sklearn(X, y)
 
+    # --- Ridge Regression ---
+    lam = 10.0
+    w_ridge = solve_ridge_regression(X, y, lam=lam)
+    y_hat_ridge = X @ w_ridge
+
+
     # --- Diagnostics ---
     print("Rank(X):", matrix_rank(X))
     print("Condition Number:", condition_number(X))
@@ -38,14 +47,22 @@ def main():
           np.linalg.norm(y_hat_proj - y_hat_ne))
     print("Projection vs Sklearn Difference:",
           np.linalg.norm(y_hat_proj - y_hat_sk))
+    print("Ridge vs Normal Eq Difference:",
+      np.linalg.norm(y_hat_ne - y_hat_ridge))
+
 
     # --- Visualization ---
     plt.scatter(x, y, label="Data")
     plt.plot(x, y_hat_sk, color="red", label="Projection Fit")
+    plt.plot(x, y_hat_ridge, linestyle="--", label=f"Ridge (λ={lam})")
     plt.legend()
     plt.title("Linear Regression as Orthogonal Projection")
     plt.show()
 
-
+EXPERIMENT = "double"  # or "linear"
 if __name__ == "__main__":
-    main()
+    if EXPERIMENT == "linear":
+        main()
+    elif EXPERIMENT == "double":
+        run_double_descent()
+
