@@ -24,7 +24,7 @@ def split_gini(X_column, y, threshold):
     return w_left * g_left + w_right * g_right
 
 #finding best feature based on gini index 
-def best_split(X, y):
+def best_split_gini(X, y):
 
     best_feature = None
     best_threshold = None
